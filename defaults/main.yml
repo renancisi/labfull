@@ -1,0 +1,47 @@
+---
+# Set the version of Node.js to install ("0.12", "4.x", "5.x", "6.x", "8.x", "9.x").
+nodejs_version: "8.x"
+
+# The directory for global installations.
+npm_config_prefix: "/usr/local/lib/npm"
+
+# Set to true to suppress the UID/GID switching when running package scripts. If set explicitly to false, then installing as a non-root user will fail.
+npm_config_unsafe_perm: "false"
+
+# Define a list of global packages to be installed with NPM.
+nodejs_npm_global_packages: []
+
+# The path of a package.json file used to install packages globally.
+nodejs_package_json_path: ""
+
+nodejs_app_path: "/opt/myapp"
+
+# Folder name for the releases
+app_version_dir: "app_release"
+
+# Softlink name for the current release
+app_current_dir: "cluster.js"
+
+app_current_version: "lalau-current.js"
+
+# Rollback to this release version (previous by default)
+#app_rollback_to_release: "lalau-previous.zip"
+app_rollback_to_release: ""
+
+# The path of a nginx install
+nginx_current_install: "/etc/nginx"
+
+# Pending 
+certbot_domain_ssl: "lab01.omnitask.com.br"
+
+# The path of a monit install
+monit_current_install: "/etc/monit"
+
+# The path of a siege install
+siege_current_install: "/etc/siege"
+
+# DNS lab
+ansible_host: "lab01.omnitask.com.br"
+
+# Email that will receive the report
+email_example: "renancisi@gmail.com"
