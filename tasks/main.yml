@@ -1,0 +1,25 @@
+---
+- import_tasks: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- import_tasks: setup-Express-Forever.yml
+
+- import_tasks: setup-Lalau.yml
+
+- import_tasks: setup-Node.yml
+
+- import_tasks: deploy-Setup.yml
+
+- import_tasks: deploy-Symlink.yml
+
+- import_tasks: setup-Nginx.yml
+
+- import_tasks: setup-Nginx.yml
+
+- import_tasks: setup-Siege.yml
+
+- import_tasks: setup-Logrotate.yml
+
+- import_tasks: deploy-Logparser.yml
+
+- import_tasks: setup-Cron.yml

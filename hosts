@@ -1,0 +1,2 @@
+[lalau-host]
+54.200.36.47 ansible_user=lalau	ansible_ssh_pass=lalau ansible_sudo_pass=lalau ansible_become=yes 

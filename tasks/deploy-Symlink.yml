@@ -3,4 +3,4 @@
   file:
     state: link
     path: "{{ nodejs_app_path }}/{{ app_current_dir }}"
-    src: "./{{ app_current_dir }}/{{ app_current_dir }}"
+    src: "{{ nodejs_app_path }}/{{ app_version_dir }}/{{ app_current_dir }}"
