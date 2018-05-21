@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+### BEGIN INIT INFO
+# Provides:             Siege test for node application
+# Short-Description:    Siege test for node application
+### END INIT INFO 
+
+case $1 in
+-n) echo "test made with 100 requests on port 3000" >> /var/log/espana.log && siege -r100 http://localhost:3000  ;;
+-N) echo "test made with 100 requests on port 80" >> /var/log/espana.log && siege -r100 http://localhost:80  ;;
+*) echo "invalid option!" 
+echo $"Usage: $0 {-n for node test|-N for nginx test}"
+    exit 1
+;;
+esac

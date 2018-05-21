@@ -1,0 +1,7 @@
+check host localhost with address 127.0.0.1
+        start "{{ nodejs_app_path }}/lalau-init start"
+        stop "{{ nodejs_app_path }}/lalau-init stop"
+        if failed port 3000 protocol HTTP
+                request /
+                with timeout 5 seconds
+                then restart

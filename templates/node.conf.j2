@@ -1,0 +1,19 @@
+server {
+    listen       80;
+
+    location / {
+      proxy_pass      http://cluster_node;
+    }
+  }
+
+server {
+    listen       443;
+
+    location / {
+      proxy_pass      http://cluster_node;
+    }
+  }
+
+  upstream cluster_node {
+    server 127.0.0.1:3000;
+  }

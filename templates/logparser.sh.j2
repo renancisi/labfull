@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+### BEGIN INIT INFO
+# Provides:             Siege test for node application
+# Short-Description:    Siege test for node application
+### END INIT INFO 
+
+echo "Date Log Calculation: $(date)" >> "{{ nodejs_app_path }}/req.txt" && grep 200 /var/log/nginx/access.log | awk '{print $6 " " $7 " " $8 " " $9}' >> "{{ nodejs_app_path }}/req.txt"
+echo "Date Log Calculation: $(date)" >> "{{ nodejs_app_path }}/req.txt" && grep 200 /var/log/nginx/access.log | awk '{print $6 " " $7 " " $8 " " $9}' | wc -l >> "{{ nodejs_app_path }}/inc.txt"

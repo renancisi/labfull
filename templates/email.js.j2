@@ -1,0 +1,34 @@
+var nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'labchaordic@gmail.com',
+    pass: 'lalau@2018!'
+  }
+});
+
+var mailOptions = {
+  from: 'labchaordic@gmail.com',
+  to: '{{ email_example }}',
+  subject: 'Relatório com Frequência e Requisição',
+  text: 'Segue anexo contendo log das URLs acessadas e a incidênca resumida dos acessos:',
+  attachments: [
+      {
+          filename: "req.txt",
+          path: "/opt/myapp/req.txt"
+      },
+      {
+          filename: "inc.txt",
+          path: "/opt/myapp/inc.txt"
+      }
+  ]
+};
+
+transporter.sendMail(mailOptions, function(error, info){
+  if (error) {
+    console.log(error);
+  } else {
+    console.log('Email sent: ' + info.response);
+  }
+});
