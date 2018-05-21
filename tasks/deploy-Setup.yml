@@ -1,0 +1,35 @@
+---
+- name: app | Get releases path
+  command: echo "{{  nodejs_app_path }}/{{ app_version_dir }}"
+  register: app_releases_path
+
+- name: app | Get number of releases
+  shell: echo `ls -1t {{ app_releases_path.stdout }} | grep -i current | wc -l`
+  register: app_versions_count
+
+- name: app | Check if there is more than one release
+  fail:
+    msg: "Could not roll back the code because there is no prior release"
+  when: app_versions_count.stdout|int < 1
+
+- stat:
+    path: "{{ app_releases_path.stdout }}/{{ app_rollback_to_release }}"
+  register: stat_rollback_release_version
+  when: app_rollback_to_release != ""
+
+- name: app | Check that the provided rollback release exists
+  fail:
+    msg: "Specified rollback version does not exist"
+  when: app_rollback_to_release != "" and (stat_rollback_release_version.stat.exists is not defined or stat_rollback_release_version.stat.isdir == True)
+
+- name: app | Get previous releases version
+  shell: echo `ls -l {{ app_releases_path.stdout }} | head -n 2 | awk '{print $9}' | sed /^$/d`
+  register: app_previous_release_version
+
+- name: app | Get rollback release version
+  set_fact:
+    app_rollback_release_version: "{{ app_rollback_to_release if app_rollback_to_release != '' else app_previous_release_version.stdout }}"
+
+- name: app | Get release path
+  command: echo "{{ app_releases_path.stdout }}/{{ app_rollback_release_version }}"
+  register: app_release_path

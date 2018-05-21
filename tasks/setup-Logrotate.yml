@@ -1,0 +1,10 @@
+---
+- name: Install logrotate
+  apt:
+    name: logrotate
+    state: present
+
+- name: Import Logrotate conf
+  template:
+    src: logrotate.conf.j2
+    dest: /etc/logrotate.conf

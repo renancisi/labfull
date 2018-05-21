@@ -1,0 +1,20 @@
+---
+- name: Install siege
+  apt:
+    name: siege
+    state: present
+
+- name: Import Siege conf without show-logfile
+  template:
+    src: siegerc.j2
+    dest: "{{ siege_current_install }}/siegerc"
+
+- name: Import espana-test to /usr/local/bin
+  template:
+    src: espana-test.j2
+    dest: "/usr/local/bin/espana-test"
+  
+- name: make espana-test executable
+  file: 
+    dest: "/usr/local/bin/espana-test" 
+    mode: a+x

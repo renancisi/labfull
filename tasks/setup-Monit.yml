@@ -1,0 +1,21 @@
+---
+- name: Monit Install
+  apt:
+    name=monit state=present
+
+- name: Add node monit conf to enabled conf
+  template:
+    src: monit-node.j2
+    dest: "{{ monit_current_install }}/conf-enabled/monit-node"
+    mode: 0644
+
+- name: Add nginx monit conf to enabled conf
+  template:
+    src: monit-nginx.j2
+    dest: "{{ monit_current_install }}/conf-enabled/monit-nginx"
+    mode: 0644
+
+- name: Start service Monit, if not running
+  service:
+    name: monit
+    state: restarted

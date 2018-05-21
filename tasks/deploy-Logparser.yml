@@ -1,0 +1,17 @@
+---
+- name: Add email.js to the project
+  template:
+    src: email.js.j2
+    dest: "{{ nodejs_app_path }}/email.js"
+    mode: 0644
+
+- name: Add logparser to the project
+  template:
+    src: logparser.sh.j2
+    dest: "{{ nodejs_app_path }}/logparser.sh"
+    mode: 0644
+
+- name: Changing perm of "logparser.sh"
+  file: 
+    dest: "{{ nodejs_app_path }}/logparser.sh" 
+    mode: a+x

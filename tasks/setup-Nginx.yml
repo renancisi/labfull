@@ -1,0 +1,20 @@
+---
+- name: Check if there is default site enabled
+  command: echo "ls -1t {{  nginx_current_install }}/sites-enabled | wc -l"
+  register: nginx_sites_enabled
+
+- name: Delete default Nginx sites enabled
+  file:
+    path: "{{  nginx_current_install }}/sites-enabled/default"
+    state: absent
+
+- name: Add node.conf to nginx conf.d
+  template:
+    src: node.conf.j2
+    dest: "{{ nginx_current_install }}/conf.d/node.conf"
+    mode: 0644
+  
+- name: Start service Nginx, if not running
+  service:
+    name: nginx
+    state: restarted

@@ -1,0 +1,12 @@
+---
+- name: Install "ExpressJS" node.js package.
+  npm:
+    name: "express"
+    path: "{{ nodejs_app_path }}"
+    state: latest
+
+- name: "Install forever (to run Node.js app)."
+  npm:
+    name: forever
+    global: yes 
+    state: present

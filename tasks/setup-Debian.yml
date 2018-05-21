@@ -1,0 +1,67 @@
+---
+- name: create directory if they don't exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0775
+  with_items:
+    - /opt/myapp/
+    - /opt/myapp/app_release
+
+- name: Update repo list
+  apt: update_cache=yes
+  when: ansible_os_family == 'Debian'
+
+- name: Upgrade packages
+  apt: upgrade=safe
+  when: ansible_os_family == 'Debian'
+
+- name: Check s.o version
+  shell:  lsb_release -r | awk '{print $2}'
+  changed_when: False
+  register: new_release
+
+- name: Notify upgrade
+  debug: msg="Debian has been upgraded from {{ ansible_lsb.release }} to {{ new_release.stdout }}"
+  when: ansible_lsb.release != new_release.stdout
+
+- name: List services to restart (1/2)
+  shell: checkrestart | grep ^service | awk '{print $2}'
+  register: services
+  changed_when: False
+  when: ansible_os_family == 'Debian'
+
+- name: List services to restart (2/2)
+  debug: msg="{{ services.stdout_lines | count }} services to restart ({{ services.stdout_lines | join (', ') }})"
+  when: (ansible_os_family == 'Debian' and services.stdout_lines)
+
+- name: apt-transport-https; unzip, nginx install
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - apt-transport-https
+    - unzip
+    - nginx
+
+- name: Add Node apt key
+  apt_key:
+    url: https://keyserver.ubuntu.com/pks/lookup?op=get&fingerprint=on&search=0x1655A0AB68576280
+    id: "68576280"
+    state: present
+
+- name: Add Node repo
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+  with_items:
+    - "deb https://deb.nodesource.com/node_{{ nodejs_version }} {{ ansible_distribution_release }} main"
+    - "deb-src https://deb.nodesource.com/node_{{ nodejs_version }} {{ ansible_distribution_release }} main"
+  register: node_repo
+
+- name: Update apt cache
+  apt: update_cache=yes
+  when: node_repo.changed
+
+- name: Node.js and npm install
+  apt: "name=nodejs={{ nodejs_version|regex_replace('x', '') }}* state=present"

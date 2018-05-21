@@ -1,0 +1,73 @@
+---
+- name: Add Cluster.js to use all os.cpus avaiable.
+  template:
+    src: lalau/cluster.js.j2
+    dest: "{{ nodejs_app_path }}/app_release/cluster.js"
+    mode: 0644
+
+- name: Add lalau-init to manage node service with monit
+  template:
+    src: lalau/lalau-init.j2
+    dest: "{{ nodejs_app_path }}/lalau-init"
+    mode: 0644
+
+- name: Changing perm of "lalau-init"
+  file: 
+    dest: "{{ nodejs_app_path }}/lalau-init" 
+    mode: a+x
+
+- name: Get releases path
+  command: echo "{{  nodejs_app_path }}/{{ app_version_dir }}"
+  register: app_releases_path
+
+- name:  Get number of releases
+  shell: echo `ls -1t {{ app_releases_path.stdout }} | grep -i lalau-current  | wc -l`
+  register: lalau_versions_count
+
+#- name: Check if release exists
+#  stat: path={{ app_releases_path }}/lalau_current.js
+#  register: lalau_versions_count
+
+- name: Versioning lalau.js
+#  shell: cp {{ app_releases_path.stdout }}/lalau-current.js {{ app_releases_path.stdout }}/$(date | awk '{print $3$2$6}') && rm -f {{ app_releases_path.stdout }}/lalau_current.js
+  #command: mv {{ app_releases_path.stdout }}/lalau-current.js {{ app_releases_path.stdout }}/$(date | awk '{print $3$2$6}')
+#  when: lalau_versions_count.stats.exists
+#  copy: 
+#    src: "{{ app_releases_path.stdout }}/lalau-current.js"
+#    dest: "{{ app_releases_path.stdout }}/lalau-current.tar.gz"
+  archive:
+    path: "{{ app_releases_path.stdout }}/{{ app_current_version }}"
+    dest: "{{ app_releases_path.stdout }}/lalau-previous.zip"
+#    remove: True
+    format: zip
+  when: lalau_versions_count.stdout |int != 0 and (app_rollback_to_release == "")
+#  when: app_rollback_to_release == ""
+
+- name: Add lalau.js on cluster.js.
+  template:
+    src: lalau/lalau.js.j2
+    dest: "{{ app_releases_path.stdout }}/{{ app_current_version }}"
+    mode: 0644
+
+- name: Unarchiving lalau.js
+  unarchive:
+    src: "{{ app_releases_path.stdout }}/{{ app_rollback_to_release }}"
+    dest: "{{ app_releases_path.stdout }}"
+    remote_src: yes
+  when: app_rollback_to_release != ""
+
+   
+- name: "Check list of Node.js apps running."
+  command: forever list
+  register: forever_list
+  changed_when: false
+
+#- name: "Start Lalau Cluster.js app."
+#  command: forever start "{{ nodejs_app_path }}/cluster.js"
+#  when: "forever_list.stdout.find('{{ nodejs_app_path }}/cluster.js') == -1"
+
+- name: "Close Lalau Cluster.js app."
+  command: pkill -9 node
+
+- name: "Start Lalau Cluster.js app."
+  command: forever start "{{ nodejs_app_path }}/cluster.js"

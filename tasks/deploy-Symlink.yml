@@ -1,0 +1,6 @@
+---
+- name: app | Change symlink from current release to a previous one
+  file:
+    state: link
+    path: "{{ nodejs_app_path }}/{{ app_current_dir }}"
+    src: "./{{ app_current_dir }}/{{ app_current_dir }}"
